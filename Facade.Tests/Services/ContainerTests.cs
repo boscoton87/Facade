@@ -1,16 +1,30 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Facade.Services;
+using Facade.Tests.Mocks.Interfaces;
+using Facade.Tests.Mocks.Services;
 
 namespace Facade.Tests.Services
 {
     [TestFixture]
     public class ContainerTests
     {
-        //Need to add tests
-    }
+        [Test]
+        public void AssertCanRegisterInstanceGlobal()
+        {
+            string servicename = "Counter";
+            Container.RegisterGlobalInstance<ICounter>(new Counter(servicename));
+            ICounter counter = Container.ResolveGlobalInstance<ICounter>();
+            Assert.AreEqual($"{servicename}: 0", counter.GetStatus());
+        }
+
+        [Test]
+        public void AssertCanRegisterInstance()
+        {
+            string servicename = "Counter";
+            Container container = new Container();
+            container.RegisterInstance<ICounter>(new Counter(servicename));
+            ICounter counter = container.ResolveInstance<ICounter>();
+            Assert.AreEqual($"{servicename}: 0", counter.GetStatus());
+        }
+    } 
 }
