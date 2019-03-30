@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2018
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Facade", "Facade\Facade.csproj", "{1C299164-EB20-4A5E-A12E-EF9A2AC405E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{539C3C82-A627-4047-A953-05CCB2823CFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Facade.Tests", "Facade.Tests\Facade.Tests.csproj", "{1DD689D7-8B13-465E-806C-7A8213ABF7BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C299164-EB20-4A5E-A12E-EF9A2AC405E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C299164-EB20-4A5E-A12E-EF9A2AC405E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C299164-EB20-4A5E-A12E-EF9A2AC405E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C299164-EB20-4A5E-A12E-EF9A2AC405E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DD689D7-8B13-465E-806C-7A8213ABF7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DD689D7-8B13-465E-806C-7A8213ABF7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DD689D7-8B13-465E-806C-7A8213ABF7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DD689D7-8B13-465E-806C-7A8213ABF7BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1DD689D7-8B13-465E-806C-7A8213ABF7BD} = {539C3C82-A627-4047-A953-05CCB2823CFA}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D0AF4BA3-D5F4-4C3E-9768-5BA0F6891101}
+	EndGlobalSection
+EndGlobal
