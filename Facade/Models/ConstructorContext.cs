@@ -5,9 +5,9 @@ namespace Facade.Models {
 	internal class ConstructorContext {
 		internal Type BuiltType { get; }
 
-		internal IList<KeyValuePair<Type, object>> Parameters { get; }
+		internal IList<object> Parameters { get; }
 
-		internal ConstructorContext(Type classType, IList<KeyValuePair<Type, object>> parameters ) {
+		internal ConstructorContext(Type classType, IList<object> parameters ) {
 			BuiltType = classType;
 			Parameters = parameters;
 		}

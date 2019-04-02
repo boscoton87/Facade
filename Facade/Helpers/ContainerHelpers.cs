@@ -10,20 +10,22 @@ namespace Facade.Helpers {
 		internal static void RegisterInstance<Interface>( object instance, Dictionary<Type, object> register ) {
 			Type interfaceType = typeof( Interface );
 			ValidateInterface( interfaceType );
-			if ( ( instance is Interface ) == false ) {
-				throw new Exception( $"instance parameter provided does not implement the {nameof( Interface )} interface." );
+            CheckMappingAvailability<Interface, object>(register);
+            if ( ( instance is Interface ) == false ) {
+				throw new Exception( $"Instance parameter provided does not implement the {nameof( Interface )} interface." );
 			}
 			register.Add( interfaceType, instance );
 		}
 
-		internal static void RegisterType<Interface, RegisteredType>( IList<KeyValuePair<Type, object>> parameters, Dictionary<Type, ConstructorContext> register ) {
+		internal static void RegisterType<Interface, RegisteredType>( List<object> parameters, Dictionary<Type, ConstructorContext> register ) {
 			Type interfaceType = typeof( Interface );
 			Type registeredType = typeof( RegisteredType );
 			ValidateInterface( interfaceType );
-			if ( registeredType.GetInterface( typeof( Interface ).Name ) == null ) {
+            CheckMappingAvailability<Interface, ConstructorContext>(register);
+            if ( registeredType.GetInterface( typeof( Interface ).Name ) == null ) {
 				throw new Exception( $"{nameof( registeredType )} does not implement {nameof( Interface )}." );
 			}
-			Type[] types = parameters.Select( param => param.Key ).ToArray();
+			Type[] types = parameters.Select( param => param.GetType() ).ToArray();
 			if ( registeredType.GetConstructor( types ) == null ) {
 				throw new Exception( $"{nameof( registeredType )} does not have a constructor that accepts the supplied parameters." );
 			}
@@ -46,7 +48,18 @@ namespace Facade.Helpers {
 			register.Add( compositeKey, new MethodContext( methodInfo, methodOwner ) );
 		}
 
-		internal static Interface ResolveInstance<Interface>( Dictionary<Type, object> register ) {
+        internal static void RemoveMethod(string methodKey, Type[] parameterTypes, Dictionary<string, MethodContext> register)
+        {
+            string compositeKey = GenerateMethodKey(methodKey, parameterTypes);
+            register.Remove(compositeKey);
+        }
+
+        internal static void RemoveTypeMapping<Interface, ValueType>(Dictionary<Type, ValueType> register)
+        {
+            register.Remove(typeof(Interface));
+        }
+
+        internal static Interface ResolveInstance<Interface>( Dictionary<Type, object> register ) {
 			Type interfaceType = typeof( Interface );
 			if ( register.ContainsKey( interfaceType ) == false ) {
 				throw new Exception( $"An instance of {nameof( Interface )} is not registered." );
@@ -60,9 +73,8 @@ namespace Facade.Helpers {
 				throw new Exception( $"A TypeMapping of {nameof( Interface )} is not registered." );
 			}
 			var registeredType = register[ interfaceType ];
-			Type[] types = registeredType.Parameters.Select( param => param.Key ).ToArray();
-			object[] parameters = registeredType.Parameters.Select( param => param.Value ).ToArray();
-			return ( Interface ) register[ interfaceType ].BuiltType.GetConstructor( types ).Invoke( parameters );
+			Type[] types = registeredType.Parameters.Select( param => param.GetType() ).ToArray();
+			return ( Interface ) register[ interfaceType ].BuiltType.GetConstructor( types ).Invoke(registeredType.Parameters.ToArray());
 		}
 
 		internal static object InvokeMethod( string methodKey, object[] parameters, Dictionary<string, MethodContext> register ) {
@@ -85,7 +97,22 @@ namespace Facade.Helpers {
 			return keyBuilder.ToString();
 		}
 
-		private static void ValidateInterface( Type interfaceType ) {
+        internal static string GenerateMethodKey(string methodKey, Type[] parameterTypes)
+        {
+            StringBuilder keyBuilder = new StringBuilder(methodKey);
+            parameterTypes.ToList().ForEach(type => keyBuilder.Append($"_{nameof(type)}"));
+            return keyBuilder.ToString();
+        }
+
+        private static void CheckMappingAvailability<Interface, MappedType>(Dictionary<Type, MappedType> register)
+        {
+            if (register.ContainsKey(typeof(Interface)))
+            {
+                throw new Exception($"{nameof(Interface)} already has been registered.");
+            }
+        }
+
+        private static void ValidateInterface( Type interfaceType ) {
 			if ( interfaceType.IsInterface == false ) {
 				throw new Exception( $"{nameof( interfaceType )} is not an Interface." );
 			}
