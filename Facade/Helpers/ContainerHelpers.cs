@@ -17,7 +17,7 @@ namespace Facade.Helpers {
 			register.Add( interfaceType, instance );
 		}
 
-		internal static void RegisterType<Interface, RegisteredType>( IList<KeyValuePair<Type, object>> parameters, Dictionary<Type, ConstructorContext> register ) {
+		internal static void RegisterType<Interface, RegisteredType>( List<object> parameters, Dictionary<Type, ConstructorContext> register ) {
 			Type interfaceType = typeof( Interface );
 			Type registeredType = typeof( RegisteredType );
 			ValidateInterface( interfaceType );
@@ -25,7 +25,7 @@ namespace Facade.Helpers {
             if ( registeredType.GetInterface( typeof( Interface ).Name ) == null ) {
 				throw new Exception( $"{nameof( registeredType )} does not implement {nameof( Interface )}." );
 			}
-			Type[] types = parameters.Select( param => param.Key ).ToArray();
+			Type[] types = parameters.Select( param => param.GetType() ).ToArray();
 			if ( registeredType.GetConstructor( types ) == null ) {
 				throw new Exception( $"{nameof( registeredType )} does not have a constructor that accepts the supplied parameters." );
 			}
@@ -73,9 +73,8 @@ namespace Facade.Helpers {
 				throw new Exception( $"A TypeMapping of {nameof( Interface )} is not registered." );
 			}
 			var registeredType = register[ interfaceType ];
-			Type[] types = registeredType.Parameters.Select( param => param.Key ).ToArray();
-			object[] parameters = registeredType.Parameters.Select( param => param.Value ).ToArray();
-			return ( Interface ) register[ interfaceType ].BuiltType.GetConstructor( types ).Invoke( parameters );
+			Type[] types = registeredType.Parameters.Select( param => param.GetType() ).ToArray();
+			return ( Interface ) register[ interfaceType ].BuiltType.GetConstructor( types ).Invoke(registeredType.Parameters.ToArray());
 		}
 
 		internal static object InvokeMethod( string methodKey, object[] parameters, Dictionary<string, MethodContext> register ) {

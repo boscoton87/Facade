@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Facade.Helpers;
 using Facade.Interfaces;
@@ -96,31 +97,13 @@ namespace Facade.Services {
         }
 
         /// <summary>
-        /// Registers a default class constructor.
-        /// </summary>
-        /// <typeparam name="Interface">Interface to map to class.</typeparam>
-        /// <typeparam name="RegisteredType">Class to map to Interface.</typeparam>
-		public static void RegisterGlobalType<Interface, RegisteredType>() {
-			ContainerHelpers.RegisterType<Interface, RegisteredType>( new List<KeyValuePair<Type, object>>(), GlobalTypeSet );
-		}
-
-        /// <summary>
-        /// Registers a class constructor that overrides the registered default constructor.
-        /// </summary>
-        /// <typeparam name="Interface">Interface to map to class.</typeparam>
-        /// <typeparam name="RegisteredType">Class to map to Interface.</typeparam>
-		public void RegisterType<Interface, RegisteredType>() {
-			ContainerHelpers.RegisterType<Interface, RegisteredType>( new List<KeyValuePair<Type, object>>(), TypeSet );
-		}
-
-        /// <summary>
         /// Registers a default class constructor with parameters.
         /// </summary>
         /// <typeparam name="Interface">Interface to map to class.</typeparam>
         /// <typeparam name="RegisteredType">Class to map to Interface.</typeparam>
         /// <param name="parameters">Parameters to pass to constructor.</param>
-		public static void RegisterGlobalType<Interface, RegisteredType>( IList<KeyValuePair<Type, object>> parameters ) {
-			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters, GlobalTypeSet );
+		public static void RegisterGlobalType<Interface, RegisteredType>( params object[] parameters ) {
+			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters.ToList(), GlobalTypeSet );
 		}
 
         /// <summary>
@@ -129,8 +112,8 @@ namespace Facade.Services {
         /// <typeparam name="Interface">Interface to map to class.</typeparam>
         /// <typeparam name="RegisteredType">Class to map to Interface.</typeparam>
         /// <param name="parameters">Parameters to pass to constructor.</param>
-		public void RegisterType<Interface, RegisteredType>( IList<KeyValuePair<Type, object>> parameters ) {
-			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters, TypeSet );
+		public void RegisterType<Interface, RegisteredType>( params object[] parameters ) {
+			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters.ToList(), TypeSet );
 		}
 
         /// <summary>

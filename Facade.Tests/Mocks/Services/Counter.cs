@@ -9,16 +9,16 @@ namespace Facade.Tests.Mocks.Services
 {
     public class Counter : ICounter
     {
-        private int Count { get; set; } = 0;
+        protected int Count { get; set; } = 0;
 
-        private string Name { get; set; } = "DefaultCounter";
+        protected string Name { get; set; } = "DefaultCounter";
 
         public string GetStatus()
         {
             return $"{Name}: {Count}";
         }
 
-        public void Increment()
+        public virtual void Increment()
         {
             Count++;
         }

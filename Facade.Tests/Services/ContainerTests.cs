@@ -3,6 +3,7 @@ using Facade.Services;
 using Facade.Tests.Mocks.Interfaces;
 using Facade.Tests.Mocks.Services;
 using System;
+using System.Collections.Generic;
 
 namespace Facade.Tests.Services
 {
@@ -28,6 +29,16 @@ namespace Facade.Tests.Services
             Container container = new Container();
             container.RegisterInstance<ICounter>(new Counter(string.Empty));
             Assert.Throws<Exception>(() => container.RegisterInstance<ICounter>(new Counter(string.Empty)), $"hello world");
+        }
+
+        [Test]
+        public void AssertCorrectConstructorCalledForInheritance()
+        {
+            Container container = new Container();
+            container.RegisterType<ICounter, AdvancedCounter>("counter", 2);
+            var counter = container.ResolveType<ICounter>();
+            counter.Increment();
+            Assert.AreEqual("counter: 2", counter.GetStatus());
         }
 
         [Test]

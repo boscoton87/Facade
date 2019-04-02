@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace Facade.Interfaces {
-	public interface IRegister {
+namespace Facade.Interfaces
+{
+    public interface IRegister {
 		void RegisterInstance<Interface>( object instance );
 
-		void RegisterType<Interface, RegisteredType>();
-
-		void RegisterType<Interface, RegisteredType>( IList<KeyValuePair<Type, object>> parameters );
+		void RegisterType<Interface, RegisteredType>( params object[] parameters );
 
 		void RegisterMethod( string methodKey, MethodInfo methodInfo, object methodOwner );
 	}
