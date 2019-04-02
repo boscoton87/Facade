@@ -23,6 +23,14 @@ namespace Facade.Tests.Services
         }
 
         [Test]
+        public void AssertThrowsIfInterfaceAlreadyMappedToInstance()
+        {
+            Container container = new Container();
+            container.RegisterInstance<ICounter>(new Counter(string.Empty));
+            Assert.Throws<Exception>(() => container.RegisterInstance<ICounter>(new Counter(string.Empty)), $"hello world");
+        }
+
+        [Test]
         public void AssertCanRegisterInstanceGlobal()
         {
             string servicename = "Counter";

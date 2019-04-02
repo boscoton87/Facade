@@ -10,7 +10,8 @@ namespace Facade.Helpers {
 		internal static void RegisterInstance<Interface>( object instance, Dictionary<Type, object> register ) {
 			Type interfaceType = typeof( Interface );
 			ValidateInterface( interfaceType );
-			if ( ( instance is Interface ) == false ) {
+            CheckMappingAvailability<Interface, object>(register);
+            if ( ( instance is Interface ) == false ) {
 				throw new Exception( $"Instance parameter provided does not implement the {nameof( Interface )} interface." );
 			}
 			register.Add( interfaceType, instance );
@@ -20,7 +21,8 @@ namespace Facade.Helpers {
 			Type interfaceType = typeof( Interface );
 			Type registeredType = typeof( RegisteredType );
 			ValidateInterface( interfaceType );
-			if ( registeredType.GetInterface( typeof( Interface ).Name ) == null ) {
+            CheckMappingAvailability<Interface, ConstructorContext>(register);
+            if ( registeredType.GetInterface( typeof( Interface ).Name ) == null ) {
 				throw new Exception( $"{nameof( registeredType )} does not implement {nameof( Interface )}." );
 			}
 			Type[] types = parameters.Select( param => param.Key ).ToArray();
@@ -101,6 +103,14 @@ namespace Facade.Helpers {
             StringBuilder keyBuilder = new StringBuilder(methodKey);
             parameterTypes.ToList().ForEach(type => keyBuilder.Append($"_{nameof(type)}"));
             return keyBuilder.ToString();
+        }
+
+        private static void CheckMappingAvailability<Interface, MappedType>(Dictionary<Type, MappedType> register)
+        {
+            if (register.ContainsKey(typeof(Interface)))
+            {
+                throw new Exception($"{nameof(Interface)} already has been registered.");
+            }
         }
 
         private static void ValidateInterface( Type interfaceType ) {
