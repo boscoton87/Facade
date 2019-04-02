@@ -11,7 +11,7 @@ namespace Facade.Helpers {
 			Type interfaceType = typeof( Interface );
 			ValidateInterface( interfaceType );
 			if ( ( instance is Interface ) == false ) {
-				throw new Exception( $"instance parameter provided does not implement the {nameof( Interface )} interface." );
+				throw new Exception( $"Instance parameter provided does not implement the {nameof( Interface )} interface." );
 			}
 			register.Add( interfaceType, instance );
 		}
@@ -46,7 +46,18 @@ namespace Facade.Helpers {
 			register.Add( compositeKey, new MethodContext( methodInfo, methodOwner ) );
 		}
 
-		internal static Interface ResolveInstance<Interface>( Dictionary<Type, object> register ) {
+        internal static void RemoveMethod(string methodKey, Type[] parameterTypes, Dictionary<string, MethodContext> register)
+        {
+            string compositeKey = GenerateMethodKey(methodKey, parameterTypes);
+            register.Remove(compositeKey);
+        }
+
+        internal static void RemoveTypeMapping<Interface, ValueType>(Dictionary<Type, ValueType> register)
+        {
+            register.Remove(typeof(Interface));
+        }
+
+        internal static Interface ResolveInstance<Interface>( Dictionary<Type, object> register ) {
 			Type interfaceType = typeof( Interface );
 			if ( register.ContainsKey( interfaceType ) == false ) {
 				throw new Exception( $"An instance of {nameof( Interface )} is not registered." );
@@ -85,7 +96,14 @@ namespace Facade.Helpers {
 			return keyBuilder.ToString();
 		}
 
-		private static void ValidateInterface( Type interfaceType ) {
+        internal static string GenerateMethodKey(string methodKey, Type[] parameterTypes)
+        {
+            StringBuilder keyBuilder = new StringBuilder(methodKey);
+            parameterTypes.ToList().ForEach(type => keyBuilder.Append($"_{nameof(type)}"));
+            return keyBuilder.ToString();
+        }
+
+        private static void ValidateInterface( Type interfaceType ) {
 			if ( interfaceType.IsInterface == false ) {
 				throw new Exception( $"{nameof( interfaceType )} is not an Interface." );
 			}

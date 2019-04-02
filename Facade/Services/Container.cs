@@ -40,6 +40,26 @@ namespace Facade.Services {
 		}
 
         /// <summary>
+        /// Removes a mapped global method.
+        /// </summary>
+        /// <param name="methodKey">Mapped method name.</param>
+        /// <param name="parameterTypes">Types of all parameters for mapped method.</param>
+        public static void RemoveGlobalMethodMapping(string methodKey, params Type[] parameterTypes)
+        {
+            ContainerHelpers.RemoveMethod(methodKey, parameterTypes, GlobalMethodSet);
+        }
+
+        /// <summary>
+        /// Removes a mapped method.
+        /// </summary>
+        /// <param name="methodKey">Mapped method name.</param>
+        /// <param name="parameterTypes">Types of all parameters for mapped method.</param>
+        public void RemoveMethodMapping(string methodKey, params Type[] parameterTypes)
+        {
+            ContainerHelpers.RemoveMethod(methodKey, parameterTypes, MethodSet);
+        }
+
+        /// <summary>
         /// Registers a default object instance.
         /// </summary>
         /// <typeparam name="Interface">Interface to map to object instance.</typeparam>
@@ -56,6 +76,24 @@ namespace Facade.Services {
 		public void RegisterInstance<Interface>( object instance ) {
 			ContainerHelpers.RegisterInstance<Interface>( instance, InstanceSet );
 		}
+
+        /// <summary>
+        /// Removes a mapped global object instance.
+        /// </summary>
+        /// <typeparam name="Interface">Mapped Interface.</typeparam>
+        public static void RemoveGlobalInstanceMapping<Interface>()
+        {
+            ContainerHelpers.RemoveTypeMapping<Interface, object>(GlobalInstanceSet);
+        }
+
+        /// <summary>
+        /// Removes a mapped object instance.
+        /// </summary>
+        /// <typeparam name="Interface">Mapped Interface.</typeparam>
+        public void RemoveInstanceMapping<Interface>()
+        {
+            ContainerHelpers.RemoveTypeMapping<Interface, object>(InstanceSet);
+        }
 
         /// <summary>
         /// Registers a default class constructor.
@@ -94,6 +132,24 @@ namespace Facade.Services {
 		public void RegisterType<Interface, RegisteredType>( IList<KeyValuePair<Type, object>> parameters ) {
 			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters, TypeSet );
 		}
+
+        /// <summary>
+        /// Removes a Global Type Mapping.
+        /// </summary>
+        /// <typeparam name="Interface">Mapped Interface.</typeparam>
+        public static void RemoveGlobalTypeMapping<Interface>()
+        {
+            ContainerHelpers.RemoveTypeMapping<Interface, ConstructorContext>(GlobalTypeSet);
+        }
+
+        /// <summary>
+        /// Removes a Type Mapping.
+        /// </summary>
+        /// <typeparam name="Interface">Mapped Interface.</typeparam>
+        public void RemoveTypeMapping<Interface>()
+        {
+            ContainerHelpers.RemoveTypeMapping<Interface, ConstructorContext>(TypeSet);
+        }
 
         /// <summary>
         /// Invokes a default registered method.  

@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Mocks\Interfaces\ICounter.cs" />
+    <Compile Include="Mocks\Interfaces\IOtherService.cs" />
     <Compile Include="Mocks\Services\Counter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ContainerTests.cs" />
