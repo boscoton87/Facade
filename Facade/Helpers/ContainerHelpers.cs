@@ -17,7 +17,7 @@ namespace Facade.Helpers {
 			register.Add( interfaceType, instance );
 		}
 
-		internal static void RegisterType<Interface, RegisteredType>( List<object> parameters, Dictionary<Type, ConstructorContext> register ) {
+		internal static void RegisterType<Interface, RegisteredType>( object[] parameters, Dictionary<Type, ConstructorContext> register ) {
 			Type interfaceType = typeof( Interface );
 			Type registeredType = typeof( RegisteredType );
 			ValidateInterface( interfaceType );
@@ -93,14 +93,20 @@ namespace Facade.Helpers {
 
 		internal static string GenerateMethodKey( string methodKey, object[] parameters ) {
 			StringBuilder keyBuilder = new StringBuilder( methodKey );
-			parameters.ToList().ForEach( parameter => keyBuilder.Append( $"_{parameter.GetType()}" ) );
+            foreach(object parameter in parameters)
+            {
+                keyBuilder.Append($"_{parameter.GetType()}");
+            }
 			return keyBuilder.ToString();
 		}
 
         internal static string GenerateMethodKey(string methodKey, Type[] parameterTypes)
         {
             StringBuilder keyBuilder = new StringBuilder(methodKey);
-            parameterTypes.ToList().ForEach(type => keyBuilder.Append($"_{nameof(type)}"));
+            foreach(Type parameterType in parameterTypes)
+            {
+                keyBuilder.Append($"_{nameof(parameterType)}");
+            }
             return keyBuilder.ToString();
         }
 

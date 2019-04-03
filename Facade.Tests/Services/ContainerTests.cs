@@ -3,7 +3,6 @@ using Facade.Services;
 using Facade.Tests.Mocks.Interfaces;
 using Facade.Tests.Mocks.Services;
 using System;
-using System.Collections.Generic;
 
 namespace Facade.Tests.Services
 {
@@ -32,22 +31,12 @@ namespace Facade.Tests.Services
         }
 
         [Test]
-        public void AssertCorrectConstructorCalledForInheritance()
-        {
-            Container container = new Container();
-            container.RegisterType<ICounter, AdvancedCounter>("counter", 2);
-            var counter = container.ResolveType<ICounter>();
-            counter.Increment();
-            Assert.AreEqual("counter: 2", counter.GetStatus());
-        }
-
-        [Test]
         public void AssertCanRegisterInstanceGlobal()
         {
-            string servicename = "Counter";
-            Container.RegisterGlobalInstance<ICounter>(new Counter(servicename));
+            string serviceName = "Counter";
+            Container.RegisterGlobalInstance<ICounter>(new Counter(serviceName));
             ICounter counter = Container.ResolveGlobalInstance<ICounter>();
-            Assert.AreEqual($"{servicename}: 0", counter.GetStatus());
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
 
             Container.RemoveGlobalInstanceMapping<ICounter>();
         }
@@ -55,11 +44,11 @@ namespace Facade.Tests.Services
         [Test]
         public void AssertCanRegisterInstance()
         {
-            string servicename = "Counter";
+            string serviceName = "Counter";
             Container container = new Container();
-            container.RegisterInstance<ICounter>(new Counter(servicename));
+            container.RegisterInstance<ICounter>(new Counter(serviceName));
             ICounter counter = container.ResolveInstance<ICounter>();
-            Assert.AreEqual($"{servicename}: 0", counter.GetStatus());
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
         }
 
         [Test]
@@ -68,13 +57,59 @@ namespace Facade.Tests.Services
             string globalServiceName = "Countera";
             Container.RegisterGlobalInstance<ICounter>(new Counter(globalServiceName));
 
-            string servicename = "Counterb";
+            string serviceName = "Counterb";
             Container container = new Container();
-            container.RegisterInstance<ICounter>(new Counter(servicename));
+            container.RegisterInstance<ICounter>(new Counter(serviceName));
             ICounter counter = container.ResolveInstance<ICounter>();
-            Assert.AreEqual($"{servicename}: 0", counter.GetStatus());
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
 
             Container.RemoveGlobalInstanceMapping<ICounter>();
+        }
+
+        [Test]
+        public void AssertCanRegisterTypeGlobal()
+        {
+            string serviceName = "Counter";
+            Container.RegisterGlobalType<ICounter, Counter>(serviceName);
+            ICounter counter = Container.ResolveGlobalType<ICounter>();
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
+
+            Container.RemoveGlobalTypeMapping<ICounter>();
+        }
+
+        [Test]
+        public void AssertCanRegisterType()
+        {
+            string serviceName = "Counter";
+            Container container = new Container();
+            container.RegisterType<ICounter, Counter>(serviceName);
+            ICounter counter = container.ResolveType<ICounter>();
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
+        }
+
+        [Test]
+        public void AssertTypeCanOverride()
+        {
+            string globalServiceName = "Countera";
+            Container.RegisterGlobalType<ICounter, Counter>(globalServiceName);
+
+            string serviceName = "Counterb";
+            Container container = new Container();
+            container.RegisterType<ICounter, Counter>(serviceName);
+            ICounter counter = container.ResolveType<ICounter>();
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
+
+            Container.RemoveGlobalTypeMapping<ICounter>();
+        }
+
+        [Test]
+        public void AssertCorrectConstructorCalledForInheritance()
+        {
+            Container container = new Container();
+            container.RegisterType<ICounter, AdvancedCounter>("counter", 2);
+            var counter = container.ResolveType<ICounter>();
+            counter.Increment();
+            Assert.AreEqual("counter: 2", counter.GetStatus());
         }
     } 
 }

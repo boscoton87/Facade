@@ -103,7 +103,7 @@ namespace Facade.Services {
         /// <typeparam name="RegisteredType">Class to map to Interface.</typeparam>
         /// <param name="parameters">Parameters to pass to constructor.</param>
 		public static void RegisterGlobalType<Interface, RegisteredType>( params object[] parameters ) {
-			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters.ToList(), GlobalTypeSet );
+			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters, GlobalTypeSet );
 		}
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Facade.Services {
         /// <typeparam name="RegisteredType">Class to map to Interface.</typeparam>
         /// <param name="parameters">Parameters to pass to constructor.</param>
 		public void RegisterType<Interface, RegisteredType>( params object[] parameters ) {
-			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters.ToList(), TypeSet );
+			ContainerHelpers.RegisterType<Interface, RegisteredType>( parameters, TypeSet );
 		}
 
         /// <summary>
