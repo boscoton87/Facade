@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Facade.Exceptions;
 using Facade.Models;
 
 namespace Facade.Helpers {
@@ -12,7 +13,7 @@ namespace Facade.Helpers {
 			ValidateInterface( interfaceType );
             CheckMappingAvailability<Interface, object>(register);
             if ( ( instance is Interface ) == false ) {
-				throw new Exception( $"Instance parameter provided does not implement the {nameof( Interface )} interface." );
+				throw new InvalidTypeMappingException( $"Instance parameter provided does not implement the {nameof( Interface )} interface." );
 			}
 			register.Add( interfaceType, instance );
 		}
@@ -23,27 +24,27 @@ namespace Facade.Helpers {
 			ValidateInterface( interfaceType );
             CheckMappingAvailability<Interface, ConstructorContext>(register);
             if ( registeredType.GetInterface( typeof( Interface ).Name ) == null ) {
-				throw new Exception( $"{nameof( registeredType )} does not implement {nameof( Interface )}." );
+				throw new InvalidTypeMappingException( $"{nameof( registeredType )} does not implement {nameof( Interface )}." );
 			}
 			Type[] types = parameters.Select( param => param.GetType() ).ToArray();
 			if ( registeredType.GetConstructor( types ) == null ) {
-				throw new Exception( $"{nameof( registeredType )} does not have a constructor that accepts the supplied parameters." );
+				throw new InvalidTypeMappingException( $"{nameof( registeredType )} does not have a constructor that accepts the supplied parameters." );
 			}
 			register.Add( interfaceType, new ConstructorContext( registeredType, parameters ) );
 		}
 
 		internal static void RegisterMethod( string methodKey, MethodInfo methodInfo, object methodOwner, Dictionary<string, MethodContext> register ) {
 			if ( methodInfo == null ) {
-				throw new Exception( "methodInfo must not be null." );
+				throw new ArgumentNullException( "methodInfo must not be null." );
 			}
 			var methodParams = methodInfo.GetParameters().Select( param => param.ParameterType.FullName ).ToArray();
 			string compositeKey = GenerateMethodKey( methodKey, methodParams );
 			if ( string.IsNullOrWhiteSpace( compositeKey ) ) {
-				throw new Exception( "methodKey is invalid." );
+				throw new InvalidArgumentException( "methodKey is invalid." );
 			} else if ( register.ContainsKey( compositeKey ) ) {
-				throw new Exception( $"a method has already been registered to {compositeKey}." );
+				throw new MappingTakenException( $"a method has already been registered to {compositeKey}." );
 			} else if ( methodInfo == null ) {
-				throw new Exception( "methodInfo must not be null." );
+				throw new ArgumentNullException( "methodInfo must not be null." );
 			}
 			register.Add( compositeKey, new MethodContext( methodInfo, methodOwner ) );
 		}
@@ -62,7 +63,7 @@ namespace Facade.Helpers {
         internal static Interface ResolveInstance<Interface>( Dictionary<Type, object> register ) {
 			Type interfaceType = typeof( Interface );
 			if ( register.ContainsKey( interfaceType ) == false ) {
-				throw new Exception( $"An instance of {nameof( Interface )} is not registered." );
+				throw new NoMappingException( $"An instance of {nameof( Interface )} is not registered." );
 			}
 			return ( Interface ) register[ interfaceType ];
 		}
@@ -70,7 +71,7 @@ namespace Facade.Helpers {
 		internal static Interface ResolveType<Interface>( Dictionary<Type, ConstructorContext> register ) {
 			Type interfaceType = typeof( Interface );
 			if ( register.ContainsKey( interfaceType ) == false ) {
-				throw new Exception( $"A TypeMapping of {nameof( Interface )} is not registered." );
+				throw new NoMappingException( $"A TypeMapping of {nameof( Interface )} is not registered." );
 			}
 			var registeredType = register[ interfaceType ];
 			Type[] types = registeredType.Parameters.Select( param => param.GetType() ).ToArray();
@@ -80,14 +81,14 @@ namespace Facade.Helpers {
 		internal static object InvokeMethod( string methodKey, object[] parameters, Dictionary<string, MethodContext> register ) {
 			string compositeKey = GenerateMethodKey( methodKey, parameters );
 			if ( register.ContainsKey( compositeKey ) == false ) {
-				throw new Exception( $"No method mapped to {compositeKey}" );
+				throw new NoMappingException( $"No method mapped to {compositeKey}" );
 			}
 			var methodInfo = register[ compositeKey ].MethodInfo;
 			object owner = register[ compositeKey ].MethodOwner;
 			try {
 				return methodInfo.Invoke( owner, parameters );
 			} catch ( TargetInvocationException ) {
-				throw new Exception( $"The method mapped to {compositeKey} failed to execute." );
+				throw new MethodInvocationException( $"The method mapped to {compositeKey} failed to execute." );
 			}
 		}
 
@@ -114,13 +115,13 @@ namespace Facade.Helpers {
         {
             if (register.ContainsKey(typeof(Interface)))
             {
-                throw new Exception($"{nameof(Interface)} already has been registered.");
+                throw new MappingTakenException($"{nameof(Interface)} already has been registered.");
             }
         }
 
         private static void ValidateInterface( Type interfaceType ) {
 			if ( interfaceType.IsInterface == false ) {
-				throw new Exception( $"{nameof( interfaceType )} is not an Interface." );
+				throw new InvalidTypeMappingException( $"{nameof( interfaceType )} is not an Interface." );
 			}
 		}
 	}
