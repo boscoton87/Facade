@@ -3,6 +3,7 @@ using Facade.Services;
 using Facade.Tests.Mocks.Interfaces;
 using Facade.Tests.Mocks.Services;
 using System;
+using Facade.Exceptions;
 
 namespace Facade.Tests.Services
 {
@@ -12,13 +13,13 @@ namespace Facade.Tests.Services
         [Test]
         public void AssertThrowsIfMappingNotInterface()
         {
-            Assert.Throws<Exception>(() => Container.RegisterGlobalInstance<Counter>(new Counter(string.Empty)), $"{nameof(Counter)} is not an Interface.");
+            Assert.Throws<InvalidTypeMappingException>(() => Container.RegisterGlobalInstance<Counter>(new Counter(string.Empty)), $"{nameof(Counter)} is not an Interface.");
         }
 
         [Test]
         public void AssertThrowsIfInstanceDoesNotImplementInterface()
         {
-            Assert.Throws<Exception>(() => Container.RegisterGlobalInstance<IOtherService>(new Counter(string.Empty)), 
+            Assert.Throws<InvalidTypeMappingException>(() => Container.RegisterGlobalInstance<IOtherService>(new Counter(string.Empty)), 
                 $"Instance parameter provided does not implement the {nameof(IOtherService)} interface.");
         }
 
@@ -27,7 +28,7 @@ namespace Facade.Tests.Services
         {
             Container container = new Container();
             container.RegisterInstance<ICounter>(new Counter(string.Empty));
-            Assert.Throws<Exception>(() => container.RegisterInstance<ICounter>(new Counter(string.Empty)), $"hello world");
+            Assert.Throws<MappingTakenException>(() => container.RegisterInstance<ICounter>(new Counter(string.Empty)), $"hello world");
         }
 
         [Test]
