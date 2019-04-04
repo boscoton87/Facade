@@ -45,9 +45,9 @@ namespace Facade.Services {
         /// </summary>
         /// <param name="methodKey">Mapped method name.</param>
         /// <param name="parameterTypes">Types of all parameters for mapped method.</param>
-        public static void RemoveGlobalMethodMapping(string methodKey, params Type[] parameterTypes)
+        public static void RemoveGlobalMethodMapping(string methodKey)
         {
-            ContainerHelpers.RemoveMethod(methodKey, parameterTypes, GlobalMethodSet);
+            ContainerHelpers.RemoveMethod(methodKey, GlobalMethodSet);
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace Facade.Services {
         /// </summary>
         /// <param name="methodKey">Mapped method name.</param>
         /// <param name="parameterTypes">Types of all parameters for mapped method.</param>
-        public void RemoveMethodMapping(string methodKey, params Type[] parameterTypes)
+        public void RemoveMethodMapping(string methodKey)
         {
-            ContainerHelpers.RemoveMethod(methodKey, parameterTypes, MethodSet);
+            ContainerHelpers.RemoveMethod(methodKey, MethodSet);
         }
 
         /// <summary>
@@ -151,9 +151,8 @@ namespace Facade.Services {
         /// <param name="parameters">Parameters to pass to method.</param>
         /// <returns>Return value of invoked method.</returns>
 		public object InvokeMethod( string methodKey, params object[] parameters ) {
-			string compositeKey = ContainerHelpers.GenerateMethodKey( methodKey, parameters );
 			Dictionary<string, MethodContext> targetedSet;
-			if ( MethodSet.ContainsKey( compositeKey ) ) {
+			if ( MethodSet.ContainsKey(methodKey) ) {
 				targetedSet = MethodSet;
 			} else {
 				targetedSet = GlobalMethodSet;

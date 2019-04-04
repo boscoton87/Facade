@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Facade.Exceptions;
 using Facade.Models;
 
-namespace Facade.Helpers {
-	internal static class ContainerHelpers {
+namespace Facade.Helpers
+{
+    internal static class ContainerHelpers {
 		internal static void RegisterInstance<Interface>( object instance, Dictionary<Type, object> register ) {
 			Type interfaceType = typeof( Interface );
 			ValidateInterface( interfaceType );
@@ -34,25 +34,19 @@ namespace Facade.Helpers {
 		}
 
 		internal static void RegisterMethod( string methodKey, MethodInfo methodInfo, object methodOwner, Dictionary<string, MethodContext> register ) {
-			if ( methodInfo == null ) {
-				throw new ArgumentNullException( "methodInfo must not be null." );
-			}
-			var methodParams = methodInfo.GetParameters().Select( param => param.ParameterType.FullName ).ToArray();
-			string compositeKey = GenerateMethodKey( methodKey, methodParams );
-			if ( string.IsNullOrWhiteSpace( compositeKey ) ) {
+			if ( string.IsNullOrWhiteSpace(methodKey) ) {
 				throw new InvalidArgumentException( "methodKey is invalid." );
-			} else if ( register.ContainsKey( compositeKey ) ) {
-				throw new MappingTakenException( $"a method has already been registered to {compositeKey}." );
+			} else if ( register.ContainsKey(methodKey) ) {
+				throw new MappingTakenException( $"a method has already been registered to {methodKey}." );
 			} else if ( methodInfo == null ) {
 				throw new ArgumentNullException( "methodInfo must not be null." );
 			}
-			register.Add( compositeKey, new MethodContext( methodInfo, methodOwner ) );
+			register.Add(methodKey, new MethodContext( methodInfo, methodOwner ) );
 		}
 
-        internal static void RemoveMethod(string methodKey, Type[] parameterTypes, Dictionary<string, MethodContext> register)
+        internal static void RemoveMethod(string methodKey, Dictionary<string, MethodContext> register)
         {
-            string compositeKey = GenerateMethodKey(methodKey, parameterTypes);
-            register.Remove(compositeKey);
+            register.Remove(methodKey);
         }
 
         internal static void RemoveTypeMapping<Interface, ValueType>(Dictionary<Type, ValueType> register)
@@ -79,37 +73,17 @@ namespace Facade.Helpers {
 		}
 
 		internal static object InvokeMethod( string methodKey, object[] parameters, Dictionary<string, MethodContext> register ) {
-			string compositeKey = GenerateMethodKey( methodKey, parameters );
-			if ( register.ContainsKey( compositeKey ) == false ) {
-				throw new NoMappingException( $"No method mapped to {compositeKey}" );
+			if ( register.ContainsKey(methodKey) == false ) {
+				throw new NoMappingException( $"No method mapped to {methodKey}" );
 			}
-			var methodInfo = register[ compositeKey ].MethodInfo;
-			object owner = register[ compositeKey ].MethodOwner;
+			var methodInfo = register[methodKey].MethodInfo;
+			object owner = register[methodKey].MethodOwner;
 			try {
 				return methodInfo.Invoke( owner, parameters );
-			} catch ( TargetInvocationException ) {
-				throw new MethodInvocationException( $"The method mapped to {compositeKey} failed to execute." );
+			} catch ( Exception ) {
+				throw new MethodInvocationException( $"The method mapped to {methodKey} failed to execute." );
 			}
 		}
-
-		internal static string GenerateMethodKey( string methodKey, object[] parameters ) {
-			StringBuilder keyBuilder = new StringBuilder( methodKey );
-            foreach(object parameter in parameters)
-            {
-                keyBuilder.Append($"_{parameter.GetType()}");
-            }
-			return keyBuilder.ToString();
-		}
-
-        internal static string GenerateMethodKey(string methodKey, Type[] parameterTypes)
-        {
-            StringBuilder keyBuilder = new StringBuilder(methodKey);
-            foreach(Type parameterType in parameterTypes)
-            {
-                keyBuilder.Append($"_{nameof(parameterType)}");
-            }
-            return keyBuilder.ToString();
-        }
 
         private static void CheckMappingAvailability<Interface, MappedType>(Dictionary<Type, MappedType> register)
         {
@@ -119,10 +93,12 @@ namespace Facade.Helpers {
             }
         }
 
-        private static void ValidateInterface( Type interfaceType ) {
-			if ( interfaceType.IsInterface == false ) {
-				throw new InvalidTypeMappingException( $"{nameof( interfaceType )} is not an Interface." );
-			}
-		}
+        private static void ValidateInterface(Type interfaceType)
+        {
+            if (interfaceType.IsInterface == false)
+            {
+                throw new InvalidTypeMappingException($"{nameof(interfaceType)} is not an Interface.");
+            }
+        }
 	}
 }
