@@ -40,7 +40,9 @@ namespace Facade.Helpers
 				throw new MappingTakenException( $"a method has already been registered to {methodKey}." );
 			} else if ( methodInfo == null ) {
 				throw new ArgumentNullException( "methodInfo must not be null." );
-			}
+			} else if (methodInfo.IsGenericMethod) {
+                throw new InvalidArgumentException( "Generic Methods are not supported." );
+            }
 			register.Add(methodKey, new MethodContext( methodInfo, methodOwner ) );
 		}
 
