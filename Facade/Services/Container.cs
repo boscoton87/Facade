@@ -82,7 +82,7 @@ namespace Facade.Services
         /// <typeparam name="Interface">Interface to map to object instance.</typeparam>
         /// <param name="name">Name of the mapping.</param>
         /// <param name="instance">Object instance to map to Interface</param>
-        public static void RegisterGlobalInstance<Interface>(string name, object instance)
+        public static void RegisterGlobalNamedInstance<Interface>(string name, object instance)
         {
             ContainerHelpers.RegisterInstance<Interface>(name, instance, GlobalInstanceSet);
         }
@@ -103,7 +103,7 @@ namespace Facade.Services
         /// <typeparam name="Interface">Interface to map to object instance.</typeparam>
         /// <param name="name">Name of the mapping.</param>
         /// <param name="instance">Object instance to map to Interface.</param>
-        public void RegisterInstance<Interface>(string name, object instance)
+        public void RegisterNamedInstance<Interface>(string name, object instance)
         {
             ContainerHelpers.RegisterInstance<Interface>(name, instance, InstanceSet);
         }
@@ -122,7 +122,7 @@ namespace Facade.Services
         /// </summary>
         /// <typeparam name="Interface">Mapped Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
-        public static void RemoveGlobalInstanceMapping<Interface>(string name)
+        public static void RemoveGlobalNamedInstanceMapping<Interface>(string name)
         {
             ContainerHelpers.RemoveTypeMapping<Interface, object>(name, GlobalInstanceSet);
         }
@@ -141,7 +141,7 @@ namespace Facade.Services
         /// </summary>
         /// <typeparam name="Interface">Mapped Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
-        public void RemoveInstanceMapping<Interface>(string name)
+        public void RemoveNamedInstanceMapping<Interface>(string name)
         {
             ContainerHelpers.RemoveTypeMapping<Interface, object>(name, InstanceSet);
         }
@@ -164,7 +164,7 @@ namespace Facade.Services
         /// <typeparam name="RegisteredType">Class to map to Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
         /// <param name="parameters">Parameters to pass to constructor.</param>
-        public static void RegisterGlobalType<Interface, RegisteredType>(string name, params object[] parameters)
+        public static void RegisterGlobalNamedType<Interface, RegisteredType>(string name, params object[] parameters)
         {
             ContainerHelpers.RegisterType<Interface, RegisteredType>(name, parameters, GlobalTypeSet);
         }
@@ -187,7 +187,7 @@ namespace Facade.Services
         /// <typeparam name="RegisteredType">Class to map to Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
         /// <param name="parameters">Parameters to pass to constructor.</param>
-        public void RegisterType<Interface, RegisteredType>(string name, params object[] parameters)
+        public void RegisterNamedType<Interface, RegisteredType>(string name, params object[] parameters)
         {
             ContainerHelpers.RegisterType<Interface, RegisteredType>(name, parameters, TypeSet);
         }
@@ -206,7 +206,7 @@ namespace Facade.Services
         /// </summary>
         /// <typeparam name="Interface">Mapped Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
-        public static void RemoveGlobalTypeMapping<Interface>(string name)
+        public static void RemoveGlobalNamedTypeMapping<Interface>(string name)
         {
             ContainerHelpers.RemoveTypeMapping<Interface, ConstructorContext>(name, GlobalTypeSet);
         }
@@ -225,7 +225,7 @@ namespace Facade.Services
         /// </summary>
         /// <typeparam name="Interface">Mapped Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
-        public void RemoveTypeMapping<Interface>(string name)
+        public void RemoveNamedTypeMapping<Interface>(string name)
         {
             ContainerHelpers.RemoveTypeMapping<Interface, ConstructorContext>(name, TypeSet);
         }
@@ -277,7 +277,7 @@ namespace Facade.Services
         /// <typeparam name="Interface">Registered Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
         /// <returns>Registered object instance.</returns>
-        public static Interface ResolveGlobalInstance<Interface>(string name)
+        public static Interface ResolveGlobalNamedInstance<Interface>(string name)
         {
             return ContainerHelpers.ResolveInstance<Interface>(name, GlobalInstanceSet);
         }
@@ -307,7 +307,7 @@ namespace Facade.Services
         /// <typeparam name="Interface">Registered Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
         /// <returns>Registered object instance.</returns>
-        public Interface ResolveInstance<Interface>(string name)
+        public Interface ResolveNamedInstance<Interface>(string name)
         {
             Dictionary<(Type Type, string Name), object> targetedSet;
             if (InstanceSet.ContainsKey((Type: typeof(Interface), Name: name)))
@@ -337,7 +337,7 @@ namespace Facade.Services
         /// <typeparam name="Interface">Registered Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
         /// <returns>Instance of Registered Class</returns>
-        public static Interface ResolveGlobalType<Interface>(string name)
+        public static Interface ResolveGlobalNamedType<Interface>(string name)
         {
             return ContainerHelpers.ResolveType<Interface>(name, GlobalTypeSet);
         }
@@ -367,7 +367,7 @@ namespace Facade.Services
         /// <typeparam name="Interface">Registered Interface.</typeparam>
         /// <param name="name">Name of the mapping.</param>
         /// <returns>Instance of Registered Class</returns>
-        public Interface ResolveType<Interface>(string name)
+        public Interface ResolveNamedType<Interface>(string name)
         {
             Dictionary<(Type Type, string Name), ConstructorContext> targetedSet;
             if (TypeSet.ContainsKey((Type: typeof(Interface), Name: name)))
