@@ -22,7 +22,7 @@ namespace Facade.Tests.Services
         {
             Container container = new Container();
             container.RegisterInstance<ICounter>(new Counter(string.Empty));
-            Assert.Throws<MappingTakenException>(() => container.RegisterInstance<ICounter>(new Counter(string.Empty)), $"hello world");
+            Assert.Throws<MappingTakenException>(() => container.RegisterInstance<ICounter>(new Counter(string.Empty)), "hello world");
         }
 
         [Test]
