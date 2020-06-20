@@ -4,19 +4,12 @@ using Facade.Tests.Mocks.Interfaces;
 using Facade.Tests.Mocks.Services;
 using System;
 using Facade.Exceptions;
-using System.Linq;
 
 namespace Facade.Tests.Services
 {
     [TestFixture]
     public class ContainerTests
     {
-        [Test]
-        public void AssertThrowsIfMappingNotInterface()
-        {
-            Assert.Throws<InvalidTypeMappingException>(() => Container.RegisterGlobalInstance<Counter>(new Counter(string.Empty)), $"{nameof(Counter)} is not an Interface.");
-        }
-
         [Test]
         public void AssertThrowsIfInstanceDoesNotImplementInterface()
         {
@@ -47,6 +40,17 @@ namespace Facade.Tests.Services
             Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
 
             Container.RemoveGlobalInstanceMapping<ICounter>();
+        }
+
+        [Test]
+        public void AssertCanRegisterInstanceNonInterfaceGlobal()
+        {
+            string serviceName = "Counter";
+            Container.RegisterGlobalInstance<Counter>(new Counter(serviceName));
+            var counter = Container.ResolveGlobalInstance<Counter>();
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
+
+            Container.RemoveGlobalInstanceMapping<Counter>();
         }
 
         [Test]
@@ -116,6 +120,54 @@ namespace Facade.Tests.Services
         }
 
         [Test]
+        public void AssertCanRegisterNamedType()
+        {
+            string serviceName = "Counter";
+            Container container = new Container();
+            container.RegisterNamedType<ICounter, Counter>("foo", serviceName);
+            ICounter counter = container.ResolveNamedType<ICounter>("foo");
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
+        }
+
+        [Test]
+        public void AssertCanRegisterMultipleNamedTypes()
+        {
+            string serviceName = "Counter";
+            Container container = new Container();
+            container.RegisterNamedType<ICounter, Counter>("foo", serviceName);
+            container.RegisterNamedType<ICounter, Counter>("bar", serviceName);
+            ICounter fooCounter = container.ResolveNamedType<ICounter>("foo");
+            ICounter barCounter = container.ResolveNamedType<ICounter>("bar");
+            barCounter.Increment();
+            Assert.AreEqual($"{serviceName}: 0", fooCounter.GetStatus());
+            Assert.AreEqual($"{serviceName}: 1", barCounter.GetStatus());
+        }
+
+        [Test]
+        public void AssertCanRegisterNamedInstance()
+        {
+            string serviceName = "Counter";
+            Container container = new Container();
+            container.RegisterNamedInstance<ICounter>("foo", new Counter(serviceName));
+            ICounter counter = container.ResolveNamedInstance<ICounter>("foo");
+            Assert.AreEqual($"{serviceName}: 0", counter.GetStatus());
+        }
+
+        [Test]
+        public void AssertCanRegisterMultipleNamedInstances()
+        {
+            string serviceName = "Counter";
+            Container container = new Container();
+            container.RegisterNamedInstance<ICounter>("foo", new Counter(serviceName));
+            container.RegisterNamedInstance<ICounter>("bar", new AdvancedCounter(serviceName, 2));
+            ICounter fooCounter = container.ResolveNamedInstance<ICounter>("foo");
+            ICounter barCounter = container.ResolveNamedInstance<ICounter>("bar");
+            barCounter.Increment();
+            Assert.AreEqual($"{serviceName}: 0", fooCounter.GetStatus());
+            Assert.AreEqual($"{serviceName}: 2", barCounter.GetStatus());
+        }
+
+        [Test]
         public void AssertTypeCanOverride()
         {
             string globalServiceName = "Countera";
@@ -138,6 +190,27 @@ namespace Facade.Tests.Services
             var counter = container.ResolveType<ICounter>();
             counter.Increment();
             Assert.AreEqual("counter: 2", counter.GetStatus());
+        }
+
+        [Test]
+        public void AssertCanRegisterInheritedType()
+        {
+            Container container = new Container();
+            container.RegisterType<Counter, AdvancedCounter>("counter", 2);
+            var counter = container.ResolveType<Counter>();
+            counter.Increment();
+            Assert.AreEqual("counter: 2", counter.GetStatus());
+        }
+
+        [Test]
+        public void AssertCanRegisterInheritedInstance()
+        {
+            Container container = new Container();
+            var counter = new AdvancedCounter("counter", 2);
+            container.RegisterInstance<Counter>(counter);
+            var resultCounter = container.ResolveInstance<Counter>();
+            resultCounter.Increment();
+            Assert.AreEqual("counter: 2", resultCounter.GetStatus());
         }
 
         [Test]
